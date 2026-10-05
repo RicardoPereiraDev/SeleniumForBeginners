@@ -1,8 +1,8 @@
-package com.practicetestautomation.tests.login;
+package com.practicetestautomation.tests.exceptions;
 
-import org.openqa.selenium.By;
+import com.practicetestautomation.pageobjects.ExceptionsPage;
+import com.practicetestautomation.tests.BaseTest;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
@@ -11,138 +11,223 @@ import org.testng.annotations.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class LoginTests {
-
-    private  WebDriver driver;
-    private Logger logger;
-    @BeforeMethod(alwaysRun = true)
-    @Parameters("browser")
-    public void setUp(@Optional("chrome") String browser){
-        //System.out.println("Running test in " + browser);
-        logger= Logger.getLogger(LoginTests.class.getName());
-        logger.setLevel(Level.INFO);
-        logger.info("Running test in " + browser);
-        switch (browser.toLowerCase()) {
-            case "chrome":
-                driver = new ChromeDriver();
-                break;
-            case "firefox":
-                driver = new FirefoxDriver();
-                break;
-            default:
-                logger.warning("Configuration for " + browser + "is missing, so running tests in Chrome by default ");
-                //System.out.println("Configuration for " + browser + "Is missing, so running tests in Chrome by default ");
-                driver = new ChromeDriver();
-                break;
-        }
-        //Open page
-        //WebDriver driver = new FirefoxDriver();
-        //driver = new FirefoxDriver();// Here initialize a session of Chrome and create a object of ChromeDriver that implement the interface Webdriver, is like as we had classe Vehicule car = new Mercedes();
-        driver.get("https://practicetestautomation.com/practice-test-login/");
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void tearDown(){
-        driver.quit();
-        logger.info("Browser is closed");
-    }
-
-    @Test(groups ={"positive", "regression", "smoke"})
-    public void testLoginFunctionality(){
-
-        logger.info("Starting testLoginFunctionality"); //Logger is a tool that writes messages about what your program is doing, making it easier to debug and monitor your application.
-
-        //Open page
-        //WebDriver driver = new ChromeDriver(); // Here initialize a session of Chrome and create a object of ChromeDriver that implement the interface Webdriver, is like as we had classe Vehicule car = new Mercedes();
-        //WebDriver driver = new FirefoxDriver();
-        //driver.get("https://practicetestautomation.com/practice-test-login/"); //here we navigate to practice test login page
-
-        //Type username student into Username field
-        WebElement usernameInput = driver.findElement(By.id("username")); //here we have inputs login credentials
-        logger.info("Type username");
-        usernameInput.sendKeys("student");
-
-        //Type password Password123 into Password field
-        WebElement passwordInput = driver.findElement(By.id("password"));
-        logger.info("Type password");
-        passwordInput.sendKeys("Password123");
-
-        //Push Submit button
-        WebElement submitButton = driver.findElement(By.id("submit"));
-        //WebElement submitButton = driver.findElement(By.id("//button"));
-        logger.info("Click Submit button");
-        submitButton.click();
-
-        try {
-            Thread.sleep(6000);
-        } catch (InterruptedException e) { //can throw excpetion, so is better tratar essa exceção, Se acontecer algum problema durante a espera, trata esse erro."
-            throw new RuntimeException(e); //Se a thread for interrompida, lança um novo erro e termina o programa."
-        }
-
-        //Verify new page URL contains practicetestautomation.com/logged-in-successfully/
-        logger.info("Verify the login functionality");
-        String urlExpected = "https://practicetestautomation.com/logged-in-successfully/";
-        String atualUrl = driver.getCurrentUrl();
-        Assert.assertEquals(atualUrl, urlExpected);
-
-        //Verify new page contains expected text ('Congratulations' or 'successfully logged in')
-
-        //String pageOFSuccess = "https://practicetestautomation.com/logged-in-successfully/";
-        String expectedMessage = "Congratulations student. You successfully logged in!";
-        String pageSource = driver.getPageSource();
-        Assert.assertTrue(pageSource.contains(expectedMessage));
-
-        //Verify button Log out is displayed on the new page
-        WebElement logOutButton = driver.findElement(By.linkText("Log out"));
-        Assert.assertTrue(logOutButton.isDisplayed());
-
-       // driver.quit();
-
-    }
-
-    @Parameters({"username", "password", "expectedErrorMessage"})
-    @Test(groups ={"negative", "regression"})
-    public void negativeLoginTest(String username, String password, String expectedErrorMessage){
-
-        //Test case 2: Negative username test
+public class ExceptionsTests extends BaseTest {
 
 
-        //Open page
+    @Test
+    public void noSuchElementExceptionTest(){
 
-        logger.info("Starting negativeLoginTest");
-        //Type username incorrectUser into Username field
-        WebElement incorrectUser = driver.findElement(By.id("username"));
-        logger.info("Typing username: " + username);
-        incorrectUser.sendKeys(username);
+        logger.info("Starting noSuchElementExceptionTest"); //Logger is a tool that writes messages about what your program is doing, making it easier to debug and monitor your application.
+        ExceptionsPage exceptionsPage = new ExceptionsPage(driver);
+        exceptionsPage.url();
+        exceptionsPage.addButton();
+        //exceptionsPage.load();
+        Assert.assertTrue(exceptionsPage.isRowTwoDisplayedAfterWait(),"Row 2 input field is not displayed");
 
-        //Type password Password123 into Password field
-        WebElement inputPassword = driver.findElement(By.id("password"));
-        logger.info("Typing password");
-        inputPassword.sendKeys(password);
 
-        //Push Submit button
-       WebElement elementButton = driver.findElement(By.id("submit"));
-        //WebElement elementButton = driver.findElement(By.id("//button"));
-        logger.info("Click Submit button");
+
+
+        /*
+
+        //Without POM - Model page object
+
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(10));
+
+        //Click Add button
+        WebElement elementButton = driver.findElement(By.id("add_btn"));
+        logger.info("Click Add button");
         elementButton.click();
 
-        try {
-            Thread.sleep(6000);
-        } catch (InterruptedException e) { //can throw excpetion, so is better tratar essa exceção, Se acontecer algum problema durante a espera, trata esse erro."
-            throw new RuntimeException(e); //Se a thread for interrompida, lança um novo erro e termina o programa."
-        }
+        //Tempo de espera explicito
+        WebElement row2InputField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='row2']/input")));
 
-        logger.info("Verify the expected error message: " + expectedErrorMessage);
-        //Verify error message is displayed
-        WebElement errorMessage = driver.findElement(By.id("error"));
-        Assert.assertTrue(errorMessage.isDisplayed());
+        //Verify Row 2 input field is displayed
+        logger.info("Verify Row 2 input is displayed");
+       // WebElement row2InputField = driver.findElement(By.xpath("//div[@id='row2']/input"));
+        Assert.assertTrue(row2InputField.isDisplayed(),"Row 2 input field is not displayed");
 
 
-        //Verify error message text is Your username is invalid!
+         */
+    }
 
-        String atualErrorMessage = errorMessage.getText();
-        Assert.assertEquals(atualErrorMessage, expectedErrorMessage);
+    @Test
+    public void timeoutExceptionTest(){
+        //WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(6));
+        ExceptionsPage exceptionsPage = new ExceptionsPage(driver);
+        exceptionsPage.url();
+        exceptionsPage.addButton();
+        Assert.assertTrue(exceptionsPage.isRowTwoDisplayedAfterWait(),"Row 2 input field is not displayed");
+
+        /*
+
+        //Click Add button
+        WebElement elementButton = driver.findElement(By.id("add_btn"));
+        logger.info("Click Add button");
+        elementButton.click();
+
+        //Tempo de espera explicito
+
+
+
+        WebElement row2InputField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='row2']/input")));
+        boolean isDisplayed = row2InputField.isDisplayed();
+        logger.info("Row 2 displayed: " + isDisplayed);
+        Assert.assertTrue(isDisplayed, "Row 2 input field is not displayed");
+
+        //Verify validações
+        Assert.assertTrue(row2InputField.isDisplayed(),"Row 2 input field is not displayed" );
+       // Assert.assertTrue(logger.info("Row 2 displayed: "+ row2InputField.isDisplayed()));
+
+
+         */
+    }
+
+
+
+    //Test case 2: ElementNotInteractableException
+    //Open page
+
+
+    @Test
+    public void ElementNotInteractableException(){
+
+        ExceptionsPage exceptionsPage = new ExceptionsPage( driver);
+        exceptionsPage.url();
+        exceptionsPage.addButton();
+        exceptionsPage.isRowTwoDisplayedAfterWait();
+        exceptionsPage.enterFood("Orange");
+        exceptionsPage.saveButton();
+        String expectedMessage = "Row 2 was saved";
+
+        Assert.assertEquals(exceptionsPage.verifyTextSavedInRows(), expectedMessage,"ATTENTION-Row 2 was not saved!!");
+
+
+        /*
+         Without POM
+
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(6));
+
+        //2-Click Add button
+        WebElement elementButton = driver.findElement(By.id("add_btn"));
+        logger.info("Click Add button");
+        elementButton.click();
+
+        //3-Wait for the second row to load and Verify validações
+        WebElement waitFor2RowInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='row2']/input")));
+
+        //4-Type text into the second input field
+        waitFor2RowInput.sendKeys("natural juice");
+
+        //5-Click Save button using locator By.name(“Save”)
+        WebElement saveButton = driver.findElement(By.xpath("//div[@id='row2']/button[@name= 'Save']"));
+        saveButton.click();
+
+        //6-Verify text saved
+        WebElement successMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("confirmation")));
+        String atualMessage = successMessage.getText();
+        logger.info("Confirmation message: " + atualMessage);
+        String expectedMessage = "Row 2 was saved";
+
+        //verifies that the website confirms the save
+        Assert.assertEquals(atualMessage, expectedMessage, "Message is not expected"); //if run fail show the message "Message is not expected"
+
+        //If i wanted to verify the input value, i would use below code:
+        String value = waitFor2RowInput.getAttribute("value");
+        logger.info("Input value: " + value);
+        Assert.assertEquals(value, "natural juice"); //verifies that the input field still contains the expected text.
+
+
+         */
 
     }
+
+    @Test
+    public void InvalidElementStateException(){
+
+        ExceptionsPage exceptionsPage = new ExceptionsPage(driver);
+        exceptionsPage.url();
+        exceptionsPage.editButton();
+
+        exceptionsPage.clearRow1();
+
+        //Type text into the input field
+        exceptionsPage.enterTextRow1("banana");
+
+        //Click Save button using locator By.name(“Save”)
+        exceptionsPage.saveButtonRow1();
+
+        //Verify text saved = Row 1 was saved
+        Assert.assertEquals(exceptionsPage.verifyTextSavedInRows(),"Row 1 was saved", "Row 1 was not saved" );
+
+        /*
+
+        //Test case 3: InvalidElementStateException
+
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(6));
+
+        WebElement inputFieldRow1 = driver.findElement(By.xpath("//div[@id='row1']/input"));
+
+        //Click in button Edit
+        WebElement editButtonWait = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("edit_btn")));
+        editButtonWait.click();
+
+        //Clear input field
+        inputFieldRow1.clear();
+        logger.info("Clear input field of row1");
+
+        //Type text into the input field
+        inputFieldRow1.sendKeys("aaa");
+
+        //Click Save button using locator By.name(“Save”)
+        WebElement saveButton = driver.findElement(By.xpath("//div[@id='row1']/button[@name= 'Save']"));
+        saveButton.click();
+
+
+        //Verify text saved
+        WebElement successMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("confirmation")));
+        String atualMessage = successMessage.getText();
+        logger.info("Confirmation message: " + atualMessage);
+        String expectedMessage = "Row 1 was saved";
+
+        //verifies that the website confirms the save
+        Assert.assertEquals(atualMessage, expectedMessage, "Message is not expected"); //if run fail show the message "Message is not expected"
+
+
+         */
+    }
+
+    @Test
+    public void StaleElementReferenceException(){
+
+        ExceptionsPage exceptionsPage = new ExceptionsPage(driver);
+        exceptionsPage.url();
+        exceptionsPage.addButton();
+        //Verify instruction text element is no longer displayed
+        Assert.assertTrue(exceptionsPage.instructionTextElemHiddenAfterWait(),"in other hand, the message of Instructions is still displayed");
+
+        //Test case 4: StaleElementReferenceException
+
+        /*
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(6));
+
+        //Test case 4: StaleElementReferenceException
+        //Open page
+        //Find the instructions text element
+       // WebElement instructionsText = driver.findElement(By.id("instructions"));
+
+
+
+        //Click in button Add
+        WebElement addButton=driver.findElement(By.id("add_btn"));
+        addButton.click();
+        logger.info("Click in add button");
+
+        //Verify instruction text element is no longer displayed
+       Assert.assertTrue(wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("instructions"))));
+
+         */
+
+    }
+
 
 }

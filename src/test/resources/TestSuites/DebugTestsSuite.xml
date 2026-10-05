@@ -1,16 +1,13 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 
-<suite name="Full Exceptions Suite Tests" verbose="1">
-    <test name="Exceptions Tests">
+<suite name="Debug Suite Tests" verbose="1">
+    <test name="Debug Tests">
         <parameter name="browser" value="chrome"></parameter>
-        <groups>
-            <run>
-                <include name="exceptions"></include>
-            </run>
-        </groups>
-
         <classes>
             <class name="com.practicetestautomation.tests.exceptions.ExceptionsTests">
+            <methods>
+                <include name="noSuchElementExceptionTest"/>
+            </methods>
             </class>
         </classes>
     </test>
