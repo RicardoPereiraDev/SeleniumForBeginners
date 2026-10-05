@@ -59,7 +59,9 @@ selenium-for-beginners/
 ├── pom.xml
 ├── .gitignore
 └── README.md
+
 My Learning Progress
+
 Selenium WebDriver
  WebDriver basics
  Browser configuration
@@ -69,12 +71,14 @@ Selenium WebDriver
  Assertions
  Test groups
  Test parameters
+ 
 Test Automation Framework
  BaseTest
  Page Object Model
  Page classes
  Test organization
  Improve framework structure
+ 
 Selenium Grid
  Introduction to Selenium Grid
  RemoteWebDriver
@@ -82,6 +86,7 @@ Selenium Grid
  Multiple browsers
  Multiple Grid nodes
  Cross-browser execution
+
 Purpose of This Repository
 
 This repository is primarily a personal learning project.
